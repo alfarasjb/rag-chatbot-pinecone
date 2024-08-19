@@ -10,7 +10,6 @@ from langchain.tools.render import format_tool_to_openai_function
 from langchain_openai import ChatOpenAI
 
 from src.definitions.credentials import Credentials, EnvVariables
-from src.utils.llm_functions import TOOLS
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 # TODO: History seems to not work properly.
 # TODO: System prompt
 
-
+TOOLS = []
 class ChatModel:
     def __init__(self):
         self.tools = TOOLS  # Add tools here
