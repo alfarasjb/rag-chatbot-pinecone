@@ -11,7 +11,7 @@ from src.definitions.credentials import Credentials
 # TODO
 class Database:
     def __init__(self):
-        self.index_name = "portfolio-website"
+        self.index_name = "playground"
         self.embeddings = OpenAIEmbeddings()
         self.text_splitter = RecursiveCharacterTextSplitter()
         self.store = PineconeVectorStore.from_existing_index(embedding=self.embeddings, index_name=self.index_name)

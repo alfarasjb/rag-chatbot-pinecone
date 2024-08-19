@@ -1,11 +1,11 @@
 import streamlit as st
 
-from src.services.llm import ChatModel
+from src.services.llm import RagChatBot
 
 
 class Chat:
     def __init__(self):
-        self.chat_model = ChatModel()
+        self.chat_model = RagChatBot()
 
     def chat_box(self):
         messages = st.container(height=500)

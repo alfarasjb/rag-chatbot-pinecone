@@ -7,7 +7,9 @@ from langchain.memory import ConversationBufferMemory
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.tools.render import format_tool_to_openai_function
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_pinecone import PineconeVectorStore
+from langchain.chains import ConversationalRetrievalChain
 
 from src.definitions.credentials import Credentials, EnvVariables
 import logging
@@ -53,4 +55,27 @@ class ChatModel:
         answer = result['output']
         logger.info(f"AI Response: {answer}")
         return answer
-    
+
+
+class RagChatBot:
+    def __init__(self):
+        self.llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+        self.embedding = OpenAIEmbeddings()
+        self.index_name = "playground"
+        self.vectorstore = PineconeVectorStore(embedding=self.embedding, index_name=self.index_name)
+        self.retriever = self.vectorstore.as_retriever()
+        self.memory = ConversationBufferMemory(
+            memory_key="chat_history",
+            return_messages=True
+        )
+        self.qa = ConversationalRetrievalChain.from_llm(
+            self.llm,
+            retriever=self.retriever,
+            memory=self.memory
+        )
+
+    def chat(self, user_prompt: str):
+        result = self.qa({"question": user_prompt})['answer']
+        logger.info(f"User Query: {user_prompt}")
+        logger.info(f"Chat bot response: {result}")
+        return result
