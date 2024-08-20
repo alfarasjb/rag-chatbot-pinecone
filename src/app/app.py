@@ -8,8 +8,14 @@ class RagApp:
     def __init__(self):
         self.chat = Chat()
         self.vector_db = VectorDatabase()
+        self.initialize_session_state()
+
+    def initialize_session_state(self):
+        if "file" not in st.session_state:
+            st.session_state.file = None
 
     def file_uploader(self):
+        st.title(f"Upload a file..")
         uploaded_file = st.file_uploader("Choose a file", type=["pdf"], accept_multiple_files=False)
         text = ""
         if uploaded_file is not None:
@@ -17,17 +23,17 @@ class RagApp:
             reader = PdfReader(uploaded_file)
             for page in reader.pages:
                 text += page.extract_text()
-            st.text_area("PDF Content: ", text, height=300)
-
-            if st.button(label="Upload to Vector Database", use_container_width=True):
-                if text == "":
-                    return
-                self.upload_to_vector_db(text)
+            st.session_state.file = text
+            st.button(label="Upload to Vector Database", use_container_width=True, on_click=self.upload_to_vector_db, args=(text,))
 
     def upload_to_vector_db(self, texts: str):
         print(f"Uploading to vector db")
+        # self.vector_db.clear_index()
         self.vector_db.store_to_pinecone(texts)
 
     def main(self):
-        self.file_uploader()
-        self.chat.chat_box()
+        print(f"File: {st.session_state.file}")
+        if st.session_state.file is None:
+            self.file_uploader()
+        else:
+            self.chat.chat_box()

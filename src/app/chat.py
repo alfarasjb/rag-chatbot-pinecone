@@ -8,7 +8,7 @@ class Chat:
         self.chat_model = RagChatBot()
 
     def chat_box(self):
-        messages = st.container()
+        messages = st.container(height=500)
 
         # Initialize Chat History
         if "messages" not in st.session_state:

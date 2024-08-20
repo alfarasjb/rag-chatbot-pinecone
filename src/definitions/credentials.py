@@ -15,6 +15,11 @@ class Credentials:
     def pinecone_api_key(cls) -> str:
         return os.getenv("PINECONE_API_KEY")
 
+    @classmethod
+    def pinecone_environment(cls) -> str:
+        return os.getenv("PINECONE_ENVIRONMENT")
+
+
 class EnvVariables:
 
     @classmethod
