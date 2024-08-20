@@ -11,6 +11,9 @@ class Credentials:
     def openai_api_key(cls) -> str:
         return os.getenv("OPENAI_API_KEY")
 
+    @classmethod
+    def pinecone_api_key(cls) -> str:
+        return os.getenv("PINECONE_API_KEY")
 
 class EnvVariables:
 
