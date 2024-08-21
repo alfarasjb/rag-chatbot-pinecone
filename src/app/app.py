@@ -11,6 +11,7 @@ class RagApp:
         self.initialize_session_state()
 
     def initialize_session_state(self):
+        st.set_page_config(page_title="RAG Chatbot", layout="centered")
         if "file" not in st.session_state:
             st.session_state.file = None
 
