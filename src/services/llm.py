@@ -5,7 +5,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
-from src.definitions.credentials import Credentials, EnvVariables
+from src.definitions.credentials import EnvVariables
 
 logger = logging.getLogger(__name__)
 

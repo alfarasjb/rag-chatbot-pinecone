@@ -26,7 +26,10 @@ class VectorDatabase:
         # Delete all vectors first
         self.clear_index()
         documents = self.get_documents(text)
-        PineconeVectorStore.from_documents(documents, self.embeddings, index_name=self.index_name)
+        vector_store = PineconeVectorStore.from_documents(documents, self.embeddings, index_name=self.index_name)
+        if vector_store is None:
+            # Failed to create instance
+            raise ValueError
 
     def get_documents(self, project_string: str) -> List[Document]:
         logger.info(f"Splitting documents..")
