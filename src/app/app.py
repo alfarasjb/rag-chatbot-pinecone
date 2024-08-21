@@ -26,9 +26,6 @@ class RagApp:
             st.session_state.file = text
             st.button(label="Upload to Vector Database", use_container_width=True, on_click=self.upload_to_vector_db, args=(text,))
         st.header("Or use the current contents..")
-        user_prompt = "Generate a 1 sentence summary of the current contents of the database."
-        response = self.chat.chat_model.chat(user_prompt)
-        st.write(response)
         st.button(label="Start chatting!", use_container_width=True, on_click=self.set_file_value)
 
     def set_file_value(self):
