@@ -19,7 +19,8 @@ class Chat:
         st.title("Ask a question!")
         messages = st.container(height=400)
         user_prompt = """You are an assistant that provides information on the topics in your knowledge base. First, 
-        introduce yourself and your capabilities, and prompt the user to ask questions about your knowledge base."""
+        introduce yourself and your capabilities, then discuss a short summary of your knowledge base, 
+        and prompt the user to ask questions about the related topics in your knowledge base."""
 
         initial_message = self.chat_model.chat(user_prompt)
         logger.info(f"Initial Message: {initial_message}")

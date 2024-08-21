@@ -33,6 +33,8 @@ class RagApp:
 
     def upload_to_vector_db(self, texts: str):
         print(f"Uploading to vector db")
+        if "messages" in st.session_state:
+            del st.session_state['messages']
         # self.vector_db.clear_index()
         self.vector_db.store_to_pinecone(texts)
 
