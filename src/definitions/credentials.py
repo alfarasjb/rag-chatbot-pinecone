@@ -23,5 +23,9 @@ class Credentials:
 class EnvVariables:
 
     @classmethod
-    def chat_model(cls):
+    def chat_model(cls) -> str:
         return os.getenv("CHAT_MODEL")
+
+    @classmethod
+    def pinecone_index_name(cls) -> str:
+        return os.getenv("INDEX_NAME", "playground")
