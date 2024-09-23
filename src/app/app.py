@@ -1,8 +1,9 @@
 import streamlit as st
+from PyPDF2 import PdfReader
 
 from src.app.chat import Chat
-from PyPDF2 import PdfReader
 from src.services.vector import VectorDatabase
+
 
 class RagApp:
     def __init__(self):
@@ -37,7 +38,7 @@ class RagApp:
         if "messages" in st.session_state:
             del st.session_state['messages']
         # self.vector_db.clear_index()
-        self.vector_db.store_to_pinecone(texts)
+        self.vector_db.store_to_pgvector(texts)
 
     def main(self):
         print(f"File: {st.session_state.file}")

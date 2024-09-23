@@ -1,52 +1,47 @@
 import logging
 from typing import List
 
-import pinecone
-
+from sqlalchemy import create_engine
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
-from langchain_pinecone import PineconeVectorStore
+from langchain.vectorstores.pgvector import PGVector
 from langchain_core.documents import Document
-
 from src.definitions.credentials import Credentials, EnvVariables
 
 logger = logging.getLogger(__name__)
 
 
-# TODO ADD LOGGING
 class VectorDatabase:
     def __init__(self):
-        self.index_name = EnvVariables.pinecone_index_name()
         self.embeddings = OpenAIEmbeddings()
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=150)
-        self.store = PineconeVectorStore.from_existing_index(embedding=self.embeddings, index_name=self.index_name)
 
-    def store_to_pinecone(self, text: str):
-        logger.info(f"Storing documents to Vector Database..")
-        # Delete all vectors first
+        # PGVector configuration
+        self.pgvector_url = EnvVariables.pgvector_url()
+        self.collection_name = "chat_vectors"
+        self.engine = create_engine(self.pgvector_url)
+        self.store = PGVector(embedding_function=self.embeddings, collection_name=self.collection_name,
+                              connection_string=self.pgvector_url)
+
+    def store_to_pgvector(self, text: str):
+        logger.info(f"Storing documents to PGVector Database...")
+        # Clear existing vectors first
         self.clear_index()
         documents = self.get_documents(text)
-        vector_store = PineconeVectorStore.from_documents(documents, self.embeddings, index_name=self.index_name)
-        if vector_store is None:
-            # Failed to create instance
-            raise ValueError
+
+        logger.info(f"Storing {len(documents)} documents...")
+        self.store.add_documents(documents)
 
     def get_documents(self, project_string: str) -> List[Document]:
-        logger.info(f"Splitting documents..")
+        logger.info(f"Splitting documents...")
         documents = self.text_splitter.create_documents(texts=[project_string])
         splits = self.text_splitter.split_documents(documents)
         logger.info(f"Num Splits: {len(splits)}")
         return splits
 
     def clear_index(self):
-        logger.info(f"Deleting all vectors from Pinecone index.")
-        pc = pinecone.Pinecone(
-            api_key=Credentials.pinecone_api_key(),
-            environment=Credentials.pinecone_environment()
-        )
-
-        index = pc.Index(self.index_name)
+        logger.info(f"Clearing PGVector index...")
         try:
-            index.delete(delete_all=True)
+            self.store.delete_collection()
         except Exception as e:
-            logger.info(f"Nothing to delete..")
+            logger.error(f"Failed to clear vectors: {e}")

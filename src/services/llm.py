@@ -1,10 +1,9 @@
 import logging
-
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_pinecone import PineconeVectorStore
-
+from langchain.vectorstores.pgvector import PGVector
+from sqlalchemy import create_engine
 from src.definitions.credentials import EnvVariables
 
 logger = logging.getLogger(__name__)
@@ -14,8 +13,13 @@ class RagChatBot:
     def __init__(self):
         self.llm = ChatOpenAI(model_name=EnvVariables.chat_model(), temperature=0.5)
         self.embedding = OpenAIEmbeddings()
-        self.index_name = EnvVariables.pinecone_index_name()
-        self.vectorstore = PineconeVectorStore(embedding=self.embedding, index_name=self.index_name)
+
+        # Connect to PGVector
+        self.pgvector_url = EnvVariables.pgvector_url()  # Assuming the URL is stored in environment variables
+        self.engine = create_engine(self.pgvector_url)
+        self.vectorstore = PGVector(embedding_function=self.embedding, collection_name="chat_vectors",
+                                    connection_string=self.pgvector_url)
+
         self.retriever = self.vectorstore.as_retriever()
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",

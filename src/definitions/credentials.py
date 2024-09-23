@@ -29,3 +29,7 @@ class EnvVariables:
     @classmethod
     def pinecone_index_name(cls) -> str:
         return os.getenv("INDEX_NAME", "playground")
+
+    @classmethod
+    def pgvector_url(cls) -> str:
+        return ""
